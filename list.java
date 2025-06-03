@@ -1,27 +1,72 @@
-package set;
+public class CustomList<T> implements IList<T> {
+    private static final int DEFAULT_CAPACITY = 10;  
+    private Object[] elements;                       
+    private int size;                                
 
-import java.util.HashSet;
-
-
-public class Set{
-public static void main(String[] args) {
-    HashSet<Integer> set = new HashSet<>();
-    set.add(1);
-    set.add(2);
-    set.add(3);
-    set.add(4);
-    set.add(5);
-    if(set.contains(1)){
-        System.out.println("1");
-    }else{
-        System.out.println("not 1");
+    
+    public CustomList() {
+        elements = new Object[DEFAULT_CAPACITY];
+        size = 0;
     }
-    set.add(6);
-    set.remove(3);
-    int lenght = set.size();
-    System.out.println("Lenght set:" +lenght);
-    for(Integer element : set){
-        System.out.println(element);
+
+    
+    @Override
+    public void add(T element) {
+        if (size == elements.length) {
+            resize();  
         }
+        elements[size++] = element;
+    }
+
+    
+    @Override
+    public void remove(int index) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
+        }
+        System.arraycopy(elements, index + 1, elements, index, size - index - 1);
+        elements[--size] = null;  
+    }
+
+    
+    @Override
+    @SuppressWarnings("unchecked")
+    public T get(int index) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
+        }
+        return (T) elements[index];
+    }
+
+    
+    @Override
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    
+    @Override
+    public int size() {
+        return size;
+    }
+
+    
+    private void resize() {
+        int newCapacity = elements.length * 2;
+        Object[] newArray = new Object[newCapacity];
+        System.arraycopy(elements, 0, newArray, 0, size);
+        elements = newArray;
+    }
+
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i < size; i++) {
+            sb.append(elements[i]);
+            if (i < size - 1) sb.append(", ");
+        }
+        sb.append("]");
+        return sb.toString();
     }
 }
