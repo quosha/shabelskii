@@ -1,0 +1,59 @@
+import java.io.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+public class FileCompressor {
+
+    public static void compress(String inputFile, String outputFile) throws IOException {
+        Map<String, Integer> map = new LinkedHashMap<>();
+        int totalLines = 0;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(inputFile))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                totalLines++;
+                map.put(line, map.getOrDefault(line, 0) + 1);
+            }
+        }
+
+        int removedDuplicates = totalLines - map.size();
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile))) {
+            for (Map.Entry<String, Integer> entry : map.entrySet()) {
+                writer.write(entry.getKey() + "|" + entry.getValue());
+                writer.newLine();
+            }
+            writer.write("Удалено дублирующихся строк: " + removedDuplicates);
+        }
+    }
+}
+import java.io.*;
+
+public class FileDecompressor {
+
+    public static void decompress(String inputFile, String outputFile) throws IOException {
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile))) {
+
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+
+                // Пропускаем строку с информацией
+                if (line.startsWith("Удалено")) {
+                    continue;
+                }
+
+                String[] parts = line.split("\\|");
+                String text = parts[0];
+                int count = Integer.parseInt(parts[1]);
+
+                for (int i = 0; i < count; i++) {
+                    writer.write(text);
+                    writer.newLine();
+                }
+            }
+        }
+    }
+}
