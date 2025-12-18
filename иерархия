@@ -1,0 +1,126 @@
+// =======================
+// package zoo.animals
+// =======================
+
+package zoo.animals;
+
+import zoo.interfaces.Eatable;
+import zoo.interfaces.Movable;
+
+public abstract class Animal implements Eatable, Movable {
+    protected String name;
+    protected int age;
+
+    public Animal(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public abstract void makeSound();
+}
+package zoo.animals;
+
+public abstract class Mammal extends Animal {
+
+    public Mammal(String name, int age) {
+        super(name, age);
+    }
+}
+package zoo.animals;
+
+public abstract class Bird extends Animal {
+
+    public Bird(String name, int age) {
+        super(name, age);
+    }
+}package zoo.animals;
+
+public class Lion extends Mammal {
+
+    public Lion(String name, int age) {
+        super(name, age);
+    }
+
+    @Override
+    public void eat() {
+        System.out.println("Лев ест мясо");
+    }
+
+    @Override
+    public void move() {
+        System.out.println("Лев бежит");
+    }
+
+    @Override
+    public void makeSound() {
+        System.out.println("Ррр!");
+    }
+}
+package zoo.animals;
+
+public class Parrot extends Bird {
+
+    public Parrot(String name, int age) {
+        super(name, age);
+    }
+
+    @Override
+    public void eat() {
+        System.out.println("Попугай клюёт зерно");
+    }
+
+    @Override
+    public void move() {
+        System.out.println("Попугай летает");
+    }
+
+    @Override
+    public void makeSound() {
+        System.out.println("Карр!");
+    }
+}
+// =======================
+// package zoo.enclosures
+// =======================
+
+package zoo.enclosures;
+
+import zoo.animals.Animal;
+
+public class Enclosure {
+    private Animal animal;
+
+    public Enclosure(Animal animal) {
+        this.animal = animal;
+    }
+
+    public void showAnimal() {
+        animal.makeSound();
+    }
+}
+// =======================
+// package zoo.zoo
+// =======================
+
+package zoo.zoo;
+
+import zoo.enclosures.Enclosure;
+import zoo.staff.Employee;
+
+import java.util.List;
+
+public class Zoo {
+    private List<Enclosure> enclosures;
+    private List<Employee> employees;
+
+    public Zoo(List<Enclosure> enclosures, List<Employee> employees) {
+        this.enclosures = enclosures;
+        this.employees = employees;
+    }
+
+    public void open() {
+        System.out.println("Зоопарк открыт");
+        employees.forEach(Employee::work);
+    }
+}
+
