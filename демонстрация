@@ -1,0 +1,38 @@
+import javax.swing.*;
+import java.awt.*;
+
+public class LayoutDemo extends JFrame {
+
+    public LayoutDemo() {
+        setTitle("Демонстрация Layout Manager'ов");
+        setSize(500, 300);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        // ===== JFrame с BorderLayout =====
+        setLayout(new BorderLayout());
+
+        // Компоненты BorderLayout
+        add(new JButton("Север (NORTH)"), BorderLayout.NORTH);
+        add(new JButton("Юг (SOUTH)"), BorderLayout.SOUTH);
+        add(new JButton("Запад (WEST)"), BorderLayout.WEST);
+        add(new JButton("Восток (EAST)"), BorderLayout.EAST);
+
+        // ===== JPanel с FlowLayout =====
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
+
+        centerPanel.add(new JButton("Кнопка 1"));
+        centerPanel.add(new JButton("Кнопка 2"));
+        centerPanel.add(new JButton("Кнопка 3"));
+        centerPanel.add(new JButton("Кнопка 4"));
+
+        add(centerPanel, BorderLayout.CENTER);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            new LayoutDemo().setVisible(true);
+        });
+    }
+}
