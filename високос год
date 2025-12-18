@@ -1,0 +1,50 @@
+import java.util.Scanner;
+
+public class LeapYearChecker {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        try {
+            System.out.print("Введите год: ");
+            String input = scanner.nextLine();
+
+            int year = parseYear(input);
+
+            if (isLeapYear(year)) {
+                System.out.println(year + " — високосный год");
+            } else {
+                System.out.println(year + " — невисокосный год");
+            }
+
+        } catch (InvalidYearException e) {
+            System.out.println("Ошибка ввода: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Неизвестная ошибка");
+        } finally {
+            scanner.close();
+        }
+    }
+
+    // Проверка високосного года
+    private static boolean isLeapYear(int year) {
+        return (year % 400 == 0) ||
+               (year % 4 == 0 && year % 100 != 0);
+    }
+
+    // Парсинг и валидация года
+    private static int parseYear(String input) throws InvalidYearException {
+        try {
+            int year = Integer.parseInt(input);
+
+            if (year <= 0) {
+                throw new InvalidYearException("Год должен быть положительным числом");
+            }
+
+            return year;
+
+        } catch (NumberFormatException e) {
+            throw new InvalidYearException("Введено не целое число");
+        }
+    }
+}
