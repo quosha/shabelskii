@@ -1,0 +1,57 @@
+import java.util.Scanner;
+
+public class CompoundInterestCalculator {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Выберите режим:");
+        System.out.println("1 - Посчитать итоговую сумму");
+        System.out.println("2 - Посчитать процент");
+        int choice = scanner.nextInt();
+
+        if (choice == 1) {
+            calculateAmount(scanner);
+        } else if (choice == 2) {
+            calculateRate(scanner);
+        } else {
+            System.out.println("Неверный выбор");
+        }
+
+        scanner.close();
+    }
+
+    // 1. Прямая задача
+    private static void calculateAmount(Scanner scanner) {
+        System.out.print("Введите начальную сумму: ");
+        double principal = scanner.nextDouble();
+
+        System.out.print("Введите процент (например 5): ");
+        double ratePercent = scanner.nextDouble();
+
+        System.out.print("Введите количество периодов: ");
+        int periods = scanner.nextInt();
+
+        double rate = ratePercent / 100;
+        double amount = principal * Math.pow(1 + rate, periods);
+
+        System.out.printf("Итоговая сумма: %.2f%n", amount);
+    }
+
+    // 2. Обратная задача
+    private static void calculateRate(Scanner scanner) {
+        System.out.print("Введите начальную сумму: ");
+        double principal = scanner.nextDouble();
+
+        System.out.print("Введите итоговую сумму: ");
+        double finalAmount = scanner.nextDouble();
+
+        System.out.print("Введите количество периодов: ");
+        int periods = scanner.nextInt();
+
+        double rate = Math.pow(finalAmount / principal, 1.0 / periods) - 1;
+        double ratePercent = rate * 100;
+
+        System.out.printf("Необходимый процент: %.2f%%%n", ratePercent);
+    }
+}
