@@ -1,0 +1,19 @@
+// Базовый класс
+public class Vehicle {
+    protected int speed;
+
+    public void move() {
+        System.out.println("Транспорт движется со скоростью " + speed);
+    }
+}
+// Наследник
+public class Car extends Vehicle {
+
+    public Car(int speed) {
+        this.speed = speed;
+    }
+
+    public void honk() {
+        System.out.println("Автомобиль сигналит");
+    }
+}
