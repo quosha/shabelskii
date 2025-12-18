@@ -1,0 +1,26 @@
+public class House {
+    private Room room;   // часть создаётся внутри
+
+    public House() {
+        this.room = new Room();
+    }
+}
+public class Room {
+    public void use() {
+        System.out.println("Комната используется");
+    }
+}
+public class Student {
+    private String name;
+
+    public Student(String name) {
+        this.name = name;
+    }
+}
+public class University {
+    private Student student;   // внешний объект
+
+    public University(Student student) {
+        this.student = student;
+    }
+}
