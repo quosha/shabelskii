@@ -1,0 +1,87 @@
+import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.*;
+
+import java.awt.*;
+import java.io.File;
+
+public class XmlTreeViewer extends JFrame {
+
+    private JTree tree;
+
+    public XmlTreeViewer(File xmlFile) {
+        setTitle("XML Viewer");
+        setSize(500, 400);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        DefaultMutableTreeNode rootNode = parseXml(xmlFile);
+        tree = new JTree(new DefaultTreeModel(rootNode));
+
+        add(new JScrollPane(tree), BorderLayout.CENTER);
+    }
+
+    // Парсинг XML и построение дерева
+    private DefaultMutableTreeNode parseXml(File file) {
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document document = builder.parse(file);
+            document.getDocumentElement().normalize();
+
+            Element rootElement = document.getDocumentElement();
+            return buildTree(rootElement);
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Ошибка чтения XML",
+                    "Ошибка",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            return new DefaultMutableTreeNode("Ошибка");
+        }
+    }
+
+    // Рекурсивное построение JTree
+    private DefaultMutableTreeNode buildTree(Node node) {
+        DefaultMutableTreeNode treeNode =
+                new DefaultMutableTreeNode(node.getNodeName());
+
+        NodeList children = node.getChildNodes();
+
+        for (int i = 0; i < children.getLength(); i++) {
+            Node child = children.item(i);
+
+            // Текстовое содержимое
+            if (child.getNodeType() == Node.TEXT_NODE) {
+                String text = child.getTextContent().trim();
+                if (!text.isEmpty()) {
+                    treeNode.add(new DefaultMutableTreeNode(text));
+                }
+            }
+
+            // Вложенные теги
+            else if (child.getNodeType() == Node.ELEMENT_NODE) {
+                treeNode.add(buildTree(child));
+            }
+        }
+
+        return treeNode;
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            JFileChooser chooser = new JFileChooser();
+            int result = chooser.showOpenDialog(null);
+
+            if (result == JFileChooser.APPROVE_OPTION) {
+                new XmlTreeViewer(chooser.getSelectedFile()).setVisible(true);
+            }
+        });
+    }
+}
