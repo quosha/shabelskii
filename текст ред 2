@@ -1,0 +1,139 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
+
+public class TextEditor extends JFrame {
+
+    private JTextArea textArea;
+    private JFileChooser fileChooser;
+    private File currentFile;
+
+    // Словарь автозамены
+    private final Map<String, String> dictionary = new HashMap<>();
+
+    public TextEditor() {
+        setTitle("Текстовый редактор с автозаменой");
+        setSize(600, 400);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        textArea = new JTextArea();
+        add(new JScrollPane(textArea), BorderLayout.CENTER);
+
+        fileChooser = new JFileChooser();
+        setJMenuBar(createMenuBar());
+
+        initDictionary();
+        initAutoReplace();
+    }
+
+    // Инициализация словаря
+    private void initDictionary() {
+        dictionary.put("teh", "the");
+        dictionary.put("javva", "java");
+        dictionary.put("recieve", "receive");
+    }
+
+    // Подключение автозамены
+    private void initAutoReplace() {
+        textArea.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (e.getKeyChar() == ' ') {
+                    // Запуск проверки в отдельном потоке
+                    new Thread(TextEditor.this::checkAndReplaceLastWord).start();
+                }
+            }
+        });
+    }
+
+    // Проверка и замена последнего слова
+    private void checkAndReplaceLastWord() {
+        String text = textArea.getText();
+
+        if (text.isEmpty()) return;
+
+        String[] words = text.split("\\s+");
+        if (words.length < 2) return;
+
+        String lastWord = words[words.length - 2]; // перед пробелом
+
+        if (dictionary.containsKey(lastWord)) {
+            String corrected = dictionary.get(lastWord);
+
+            SwingUtilities.invokeLater(() -> {
+                int index = text.lastIndexOf(lastWord);
+                if (index >= 0) {
+                    textArea.replaceRange(
+                            corrected,
+                            index,
+                            index + lastWord.length()
+                    );
+                }
+            });
+        }
+    }
+
+    // ===== Меню =====
+    private JMenuBar createMenuBar() {
+        JMenuBar menuBar = new JMenuBar();
+        JMenu fileMenu = new JMenu("Файл");
+
+        JMenuItem openItem = new JMenuItem("Открыть");
+        JMenuItem saveItem = new JMenuItem("Сохранить");
+        JMenuItem exitItem = new JMenuItem("Выход");
+
+        openItem.addActionListener(e -> openFile());
+        saveItem.addActionListener(e -> saveFile());
+        exitItem.addActionListener(e -> System.exit(0));
+
+        fileMenu.add(openItem);
+        fileMenu.add(saveItem);
+        fileMenu.addSeparator();
+        fileMenu.add(exitItem);
+
+        menuBar.add(fileMenu);
+        return menuBar;
+    }
+
+    // Открытие файла
+    private void openFile() {
+        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            currentFile = fileChooser.getSelectedFile();
+            try (BufferedReader reader = new BufferedReader(new FileReader(currentFile))) {
+                textArea.setText("");
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    textArea.append(line + "\n");
+                }
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(this, "Ошибка открытия файла");
+            }
+        }
+    }
+
+    // Сохранение файла
+    private void saveFile() {
+        if (currentFile == null) {
+            if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) {
+                return;
+            }
+            currentFile = fileChooser.getSelectedFile();
+        }
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(currentFile))) {
+            writer.write(textArea.getText());
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Ошибка сохранения файла");
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            new TextEditor().setVisible(true);
+        });
+    }
+}
