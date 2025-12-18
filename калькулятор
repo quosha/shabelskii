@@ -1,0 +1,50 @@
+public class Calculator {
+
+    public static void main(String[] args) {
+        String input = "2 * 6.5";
+        calculate(input);
+    }
+
+    public static void calculate(String expression) {
+        // Убираем лишние пробелы
+        expression = expression.trim();
+
+        // Разбиваем строку по пробелам
+        String[] parts = expression.split(" ");
+
+        if (parts.length != 3) {
+            System.out.println("Неверный формат ввода");
+            return;
+        }
+
+        double a = Double.parseDouble(parts[0]);
+        String operator = parts[1];
+        double b = Double.parseDouble(parts[2]);
+
+        double result;
+
+        switch (operator) {
+            case "+":
+                result = a + b;
+                break;
+            case "-":
+                result = a - b;
+                break;
+            case "*":
+                result = a * b;
+                break;
+            case "/":
+                if (b == 0) {
+                    System.out.println("Ошибка: деление на ноль");
+                    return;
+                }
+                result = a / b;
+                break;
+            default:
+                System.out.println("Неизвестная операция");
+                return;
+        }
+
+        System.out.println("Результат: " + result);
+    }
+}
