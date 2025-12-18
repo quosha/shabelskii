@@ -1,0 +1,135 @@
+public enum Suit {
+    HEARTS, DIAMONDS, CLUBS, SPADES
+}
+public enum Rank {
+    TWO, THREE, FOUR, FIVE, SIX, SEVEN,
+    EIGHT, NINE, TEN, JACK, QUEEN, KING, ACE
+}
+import java.util.Objects;
+
+public class Card {
+    private final Suit suit;
+    private final Rank rank;
+
+    public Card(Suit suit, Rank rank) {
+        this.suit = suit;
+        this.rank = rank;
+    }
+
+    public Suit getSuit() {
+        return suit;
+    }
+
+    public Rank getRank() {
+        return rank;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Card)) return false;
+        Card card = (Card) o;
+        return suit == card.suit && rank == card.rank;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(suit, rank);
+    }
+
+    @Override
+    public String toString() {
+        return rank + " of " + suit;
+    }
+}
+import java.util.*;
+
+public class Deck {
+    private final Set<Card> cards = new HashSet<>();
+
+    public Deck() {
+        initialize();
+    }
+
+    // Создание стандартной колоды
+    private void initialize() {
+        for (Suit suit : Suit.values()) {
+            for (Rank rank : Rank.values()) {
+                cards.add(new Card(suit, rank));
+            }
+        }
+    }
+
+    // Перетасовка
+    public void shuffle() {
+        List<Card> shuffled = new ArrayList<>(cards);
+        Collections.shuffle(shuffled);
+        cards.clear();
+        cards.addAll(shuffled);
+    }
+
+    // Сдать карту
+    public Card dealCard() {
+        if (cards.isEmpty()) {
+            throw new IllegalStateException("Колода пуста");
+        }
+
+        Iterator<Card> iterator = cards.iterator();
+        Card card = iterator.next();
+        iterator.remove(); // карта выбывает из колоды
+        return card;
+    }
+
+    // Вернуть карту в колоду
+    public boolean returnCard(Card card) {
+        return cards.add(card); // false, если карта уже есть
+    }
+
+    public int size() {
+        return cards.size();
+    }
+}
+import java.util.ArrayList;
+import java.util.List;
+
+public class Hand {
+    private final List<Card> cards = new ArrayList<>();
+
+    public void addCard(Card card) {
+        cards.add(card);
+    }
+
+    public Card removeCard(int index) {
+        return cards.remove(index);
+    }
+
+    public List<Card> getCards() {
+        return cards;
+    }
+}
+public class Main {
+
+    public static void main(String[] args) {
+        Deck deck = new Deck();
+        deck.shuffle();
+
+        Hand hand = new Hand();
+
+        // Сдача карт
+        Card c1 = deck.dealCard();
+        Card c2 = deck.dealCard();
+
+        hand.addCard(c1);
+        hand.addCard(c2);
+
+        System.out.println("Карты в руке: " + hand.getCards());
+        System.out.println("Карт в колоде: " + deck.size());
+
+        // Возврат карты
+        Card returned = hand.removeCard(0);
+        boolean success = deck.returnCard(returned);
+
+        System.out.println("Возврат успешен: " + success);
+        System.out.println("Карт в колоде после возврата: " + deck.size());
+    }
+}
