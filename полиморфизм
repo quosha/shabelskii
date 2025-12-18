@@ -1,0 +1,36 @@
+public interface Shape {
+    double area();
+}
+public class Circle implements Shape {
+    private double r;
+
+    public Circle(double r) {
+        this.r = r;
+    }
+
+    @Override
+    public double area() {
+        return Math.PI * r * r;
+    }
+}
+public class Rectangle implements Shape {
+    private double a, b;
+
+    public Rectangle(double a, double b) {
+        this.a = a;
+        this.b = b;
+    }
+
+    @Override
+    public double area() {
+        return a * b;
+    }
+}
+Shape[] shapes = {
+    new Circle(2),
+    new Rectangle(3, 4)
+};
+
+for (Shape s : shapes) {
+    System.out.println(s.area());
+}
