@@ -1,0 +1,106 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.io.*;
+
+public class TextEditor extends JFrame {
+
+    private JTextArea textArea;
+    private JFileChooser fileChooser;
+    private File currentFile;
+
+    public TextEditor() {
+        setTitle("Текстовый редактор");
+        setSize(600, 400);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        // Текстовое поле
+        textArea = new JTextArea();
+        add(new JScrollPane(textArea), BorderLayout.CENTER);
+
+        // Выбор файла
+        fileChooser = new JFileChooser();
+
+        // Меню
+        setJMenuBar(createMenuBar());
+    }
+
+    private JMenuBar createMenuBar() {
+        JMenuBar menuBar = new JMenuBar();
+
+        JMenu fileMenu = new JMenu("Файл");
+
+        JMenuItem openItem = new JMenuItem("Открыть");
+        JMenuItem saveItem = new JMenuItem("Сохранить");
+        JMenuItem exitItem = new JMenuItem("Выход");
+
+        openItem.addActionListener(this::openFile);
+        saveItem.addActionListener(this::saveFile);
+        exitItem.addActionListener(e -> System.exit(0));
+
+        fileMenu.add(openItem);
+        fileMenu.add(saveItem);
+        fileMenu.addSeparator();
+        fileMenu.add(exitItem);
+
+        menuBar.add(fileMenu);
+        return menuBar;
+    }
+
+    // Открытие файла
+    private void openFile(ActionEvent e) {
+        int result = fileChooser.showOpenDialog(this);
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            currentFile = fileChooser.getSelectedFile();
+
+            try (BufferedReader reader = new BufferedReader(new FileReader(currentFile))) {
+                textArea.setText("");
+                String line;
+
+                while ((line = reader.readLine()) != null) {
+                    textArea.append(line + "\n");
+                }
+
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Ошибка при открытии файла",
+                        "Ошибка",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
+        }
+    }
+
+    // Сохранение файла
+    private void saveFile(ActionEvent e) {
+
+        if (currentFile == null) {
+            int result = fileChooser.showSaveDialog(this);
+            if (result != JFileChooser.APPROVE_OPTION) {
+                return;
+            }
+            currentFile = fileChooser.getSelectedFile();
+        }
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(currentFile))) {
+            writer.write(textArea.getText());
+
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Ошибка при сохранении файла",
+                    "Ошибка",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            new TextEditor().setVisible(true);
+        });
+    }
+}
